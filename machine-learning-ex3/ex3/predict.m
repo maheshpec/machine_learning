@@ -9,6 +9,7 @@ num_labels = size(Theta2, 1);
 
 % You need to return the following variables correctly 
 p = zeros(size(X, 1), 1);
+X = [ ones(m, 1) X];
 
 % ====================== YOUR CODE HERE ======================
 % Instructions: Complete the following code to make predictions using
@@ -20,14 +21,11 @@ p = zeros(size(X, 1), 1);
 %       information see 'help max'. If your examples are in rows, then, you
 %       can use max(A, [], 2) to obtain the max for each row.
 %
-
-
-
-
-
-
-
-
+hidden_layer = sigmoid(Theta1 * X');
+hidden_layer = [ones(1, size(hidden_layer, 2)); hidden_layer];
+output_layer = sigmoid(Theta2 * hidden_layer);
+output_layer = output_layer';
+[temp, p] = max(output_layer, [], 2);
 
 % =========================================================================
 
