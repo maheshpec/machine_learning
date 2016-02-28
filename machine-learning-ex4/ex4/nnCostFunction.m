@@ -39,6 +39,32 @@ Theta2_grad = zeros(size(Theta2));
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
 %
+a1 = [ones(size(X,1),1) X];
+
+%Hidden Layer
+z2 = Theta1 * a1';
+a2 = sigmoid(z2);
+a2 = [ones(1, size(a2,2)); a2];
+
+%Output layer
+z3 = Theta2 * a2;
+hx = sigmoid(z3);
+
+%Calculate J
+K  = size(hx,1);
+for k = 1:K
+    mod_y(k,:) = (y==k);
+endfor
+
+J = sum(sum( (mod_y .* log(hx)) + ((1-mod_y) .* log(1 - hx))));
+J = -1 *J/m;
+
+%Calculate regularization
+mod_Theta1 = Theta1(:,2: end);
+mod_Theta2 = Theta2(:,2: end);
+reg = sum(sum(mod_Theta1 .^ 2)) + sum(sum(mod_Theta2 .^ 2));
+reg = (reg * lambda)/(2 * m);
+J = J + reg;
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
 %         the cost function with respect to Theta1 and Theta2 in Theta1_grad and
@@ -54,6 +80,27 @@ Theta2_grad = zeros(size(Theta2));
 %               over the training examples if you are implementing it for the 
 %               first time.
 %
+for t=1:m
+    a1_b = a1(t,:);
+
+    z2_b = z2(:,t);
+    a2_b = a2(:,t);
+
+    z3_b = z3(:,t)';
+    a3_b = hx(:,t);
+    mod_y_b = mod_y(:,t);
+
+    delta3 = a3_b - mod_y_b;
+    delta2 = Theta2' * delta3;
+    delta2 = delta2(2:end);
+    delta2 = delta2 .* sigmoidGradient(z2_b);
+
+    Theta1_grad = Theta1_grad + delta2 * a1_b;
+    Theta2_grad = Theta2_grad + delta3 * a2_b';
+endfor
+Theta1_grad = Theta1_grad/m;
+Theta2_grad = Theta2_grad/m;
+
 % Part 3: Implement regularization with the cost function and gradients.
 %
 %         Hint: You can implement this around the code for
@@ -63,24 +110,9 @@ Theta2_grad = zeros(size(Theta2));
 %
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 % -------------------------------------------------------------
+Theta1_grad(:,2:end) = Theta1_grad(:,2:end) + lambda * (Theta1(:,2:end))/m;
+Theta2_grad(:,2:end) = Theta2_grad(:,2:end) + lambda * (Theta2(:,2:end))/m;
 
 % =========================================================================
 
