@@ -32,7 +32,7 @@ for c_temp = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
                 predictions = svmPredict(model, Xval);
                 error_val = mean(double(predictions ~= yval));
                 if error_val < error_val_min
-                        error_val_min = error_val
+                        error_val_min = error_val;
                         c_min = c_temp;
                         sigma_min = sigma_temp;
                 endif
